@@ -20,7 +20,7 @@ app.use(
     cors({
         origin: [
             "https://www.newragrids.com",
-            "https://newragrids-client.vercel.app",
+            "https://client-new-red.vercel.app",
             "http://localhost:8080",
         ],
         credentials: true,
