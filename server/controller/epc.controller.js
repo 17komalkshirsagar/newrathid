@@ -2,7 +2,7 @@ const User = require("../models/EPC");
 const bcrypt = require("bcryptjs");
 const { cloudinary } = require("../utils/cloudinary.config");
 const { Upload } = require("../utils/upload");
-const fs = require("fs");
+const streamifier = require("streamifier");
 const path = require("path");
 
 // exports.addSolarFarm = async (req, res) => {
@@ -200,7 +200,7 @@ exports.addSolarFarm = async (req, res) => {
                             }
                         );
 
-                        fs.createReadStream(landFile.path).pipe(stream);
+                        streamifier.createReadStream(landFile.buffer).pipe(stream);
                     });
                 };
 

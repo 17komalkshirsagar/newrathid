@@ -1,4 +1,4 @@
-const fs = require("fs");
+const streamifier = require("streamifier");
 const path = require("path");
 const EnergyAssociate = require("../models/energyAssociate");
 const { cloudinary } = require("../utils/cloudinary.config");
@@ -64,7 +64,7 @@ exports.onboard = async (req, res) => {
                 resolve(result.secure_url);
               }
             );
-            fs.createReadStream(landFile.path).pipe(stream);
+            streamifier.createReadStream(landFile.buffer).pipe(stream);
           });
         };
 
@@ -125,29 +125,29 @@ exports.onboard = async (req, res) => {
 
 
 exports.getAssociateProfile = async (req, res) => {
-    try {
-        const userId = req.params.id;
+  try {
+    const userId = req.params.id;
 
-        const user = await EnergyAssociate.findById(userId).select("-password");
+    const user = await EnergyAssociate.findById(userId).select("-password");
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "Associate not found"
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            profile: user
-        });
-
-    } catch (error) {
-        console.error("Error fetching associate profile:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server Error",
-            error: error.message
-        });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Associate not found"
+      });
     }
+
+    res.status(200).json({
+      success: true,
+      profile: user
+    });
+
+  } catch (error) {
+    console.error("Error fetching associate profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
 };

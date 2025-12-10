@@ -434,7 +434,7 @@ exports.registerPartner = async (req, res) => {
                         }
                     );
 
-                    fs.createReadStream(landFile.path).pipe(stream);
+                    streamifier.createReadStream(landFile.buffer).pipe(stream);
                 });
             };
 
