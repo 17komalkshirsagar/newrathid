@@ -24,8 +24,8 @@ app.use(
             "https://www.newragrids.com",
             "https://client-new-red.vercel.app",
             "http://localhost:8080",
-            "http://localhost:5173", // Vite default
-            "http://localhost:3000", // React default
+            "http://localhost:5173",
+            "http://localhost:3000",
         ],
         credentials: true,
     })
