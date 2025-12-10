@@ -9,7 +9,9 @@ require("dotenv").config({ path: "./.env" });
 const app = express();
 
 app.set("trust proxy", 1);
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: false, // Allow cross-origin requests
+}));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -22,10 +24,18 @@ app.use(
             "https://www.newragrids.com",
             "https://client-new-red.vercel.app",
             "http://localhost:8080",
+            "http://localhost:5173", // Vite default
+            "http://localhost:3000", // React default
         ],
         credentials: true,
     })
 );
+
+// Log CORS issues
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path} - Origin: ${req.get('origin')}`);
+    next();
+});
 
 
 
