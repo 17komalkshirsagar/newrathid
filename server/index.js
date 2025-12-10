@@ -10,7 +10,7 @@ const app = express();
 
 app.set("trust proxy", 1);
 app.use(helmet({
-    crossOriginResourcePolicy: false, // Allow cross-origin requests
+    crossOriginResourcePolicy: false,
 }));
 
 app.use(express.json());
@@ -30,11 +30,10 @@ app.use(
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization", "Cookie", "X-Requested-With"],
-        optionsSuccessStatus: 200 // For legacy browser support
+        optionsSuccessStatus: 200
     })
 );
 
-// Log CORS issues
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.path} - Origin: ${req.get('origin')}`);
     next();
