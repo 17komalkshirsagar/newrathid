@@ -145,6 +145,10 @@ exports.addSolarFarm = async (req, res) => {
             // Parse because form-data मध्ये JSON string येतो
             farms = JSON.parse(farms);
 
+            console.log('Parsed farms:', JSON.stringify(farms, null, 2));
+            console.log('Number of farms:', farms.length);
+            console.log('Files received:', req.files?.map(f => f.fieldname));
+
             // FIND EPC USER
             const epcUser = await User.findById(epcId);
             if (!epcUser) {
@@ -168,21 +172,33 @@ exports.addSolarFarm = async (req, res) => {
                     expectedCommissioningTimeline
                 } = farms[i];
 
-                if (location) location = JSON.parse(location);
-                if (capacity) capacity = JSON.parse(capacity);
-                if (substation) substation = JSON.parse(substation);
-                if (expectedCommissioningTimeline)
-                    expectedCommissioningTimeline = JSON.parse(expectedCommissioningTimeline);
+                // Parse JSON strings with error handling
+                try {
+                    if (location && typeof location === 'string') location = JSON.parse(location);
+                    if (capacity && typeof capacity === 'string') capacity = JSON.parse(capacity);
+                    if (substation && typeof substation === 'string') substation = JSON.parse(substation);
+                    if (expectedCommissioningTimeline && typeof expectedCommissioningTimeline === 'string')
+                        expectedCommissioningTimeline = JSON.parse(expectedCommissioningTimeline);
+                } catch (parseError) {
+                    console.error(`JSON Parse Error for farm ${i}:`, parseError);
+                    return res.status(400).json({
+                        error: `Invalid JSON format in farm ${i}`,
+                        details: parseError.message
+                    });
+                }
 
                 const landFile = req.files?.find(
                     (f) => f.fieldname === `landDocument_${i}`
                 );
 
                 if (!landFile) {
+                    console.error(`Missing file for farm ${i}, expected fieldname: landDocument_${i}`);
                     return res.status(400).json({
                         message: `landDocument ${i} file is required`
                     });
                 }
+
+                console.log(`Processing farm ${i}, file: ${landFile.originalname}, size: ${landFile.size} bytes`);
 
                 // Upload to cloudinary
                 const uploadFile = () => {
@@ -205,6 +221,7 @@ exports.addSolarFarm = async (req, res) => {
                 };
 
                 const fileUrl = await uploadFile();
+                console.log(`Farm ${i} file uploaded successfully:`, fileUrl);
 
                 // Substation Logic
                 let finalSubstation = {};
@@ -247,6 +264,8 @@ exports.addSolarFarm = async (req, res) => {
 
             // Save after loop
             await epcUser.save();
+
+            console.log(`Successfully added ${farms.length} solar farms to EPC user ${epcId}`);
 
             res.status(201).json({
                 message: "All Solar Farms Added Successfully",
