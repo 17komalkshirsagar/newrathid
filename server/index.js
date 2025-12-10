@@ -28,6 +28,9 @@ app.use(
             "http://localhost:3000",
         ],
         credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allowedHeaders: ["Content-Type", "Authorization", "Cookie", "X-Requested-With"],
+        optionsSuccessStatus: 200 // For legacy browser support
     })
 );
 
